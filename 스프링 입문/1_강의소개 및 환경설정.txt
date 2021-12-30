@@ -1,0 +1,142 @@
+
+ 강의소개 및 프로젝트 환경설정.
+
+
+
+ # 강의 소개.
+
+강의 방향.
+실무 개발에 꼭 필요한 스프링 학습.
+처음부터 끝까지 직접 코딩.
+
+
+
+ # 프로젝트 환경 설정.
+
+사전 준비물.
+Java 11 설치.
+IDE : IntelliJ 또는 Eclipse 설치.
+
+https://start.spring.io/ 
+Project : Maven, Gradle Builder 선택. ( Gradle이 강세 )
+Language : Java.
+Spring Boot : SNAPSHOT( 아직 만들고 있는 버전 ) 
+Project Metadata : 프로젝트명, 회사명 등을 설정.
+Dependencies : Spring Web, Thymeleaf ( 뒤에서 설명 )
+
+웹에서 만든 프로젝트를 빌드하는 방법.
+start.spring.io에서 프로젝트 생성 -> 압축파일 다운로드 -> 압축풀기 -> intellij에서 build.gradle open.
+
+프로젝트 설명.
+src : main은 java, resources가 들어있다, test는 test관련 소스들이 들어있다.
+
+gradle.
+버전 설정하고 라이브러리 설정해주는 builder. ( maven과 같은 역할 )
+dependencies : 웹에서 설정한 dependencies가 그대로 들어가있다. ( 기본적으로 test junit5가 들어가있다 )
+repositories : mavenCentral( ) - mavenCentral이라는 library들을 다운받을 수 있다.
+
+gitignore.
+git과 관련된 설정.
+필요한 소스파일코드만 잘 올릴 수 있도록 설정할 수 있다.
+
+springboot.
+tomcat서버를 내장하고 있다.
+
+intellij 설정.
+settings( preferences ) -> gradle 검색 -> build and run IntelliJ IDEA로 변경.
+
+
+
+ # 라이브러리 살펴보기.
+
+gradle의 편리함.
+gradle은 의존관계에 있는 라이브러리들을 자동으로 읽어온다.
+External Libraries에 모든 라이브러리를 확인할 수 있다.
+
+내가 설정한 라이브러리 확인하기.
+오른쪽 위에 Gradle -> 프로젝트 이름 -> Dependencies -> compileClasspath ( 내가 설정한 라이브러리 )
+내가 설정한 라이브러리를 열면 의존관계에 있는 라이브러리들도 확인할 수 있다.
+
+spring-boot-starter.
+스프링 관련 프로젝트를 쓰면 왠만하면 다 의존관계에 의해 읽어온다.
+spring-boot-dependencies, spring-core, spring-boot-stater-logging 등 중요 library를 읽어온다.
+
+system.out.println( ) ;
+실제 현업에서는 spring-boot-stater-logging을 통해 log기록을 남길 수 있는 방식을 사용한다.
+logback-classic, jul-to-slf4j가 로깅의 핵심이다.
+
+testCompileClasspath.
+boot에서 junit5을 기본으로 test library로 읽어온다.
+mockito - 목 라이브러리, assertj : 테스트 코드를 좀 더 편하게 작성하게 도와주는 라이브러리.
+spring-test : 스프링 통합 테스트 지원.
+
+
+
+ # view 환경설정.
+
+welcome 페이지 만들기.
+src -> resouces -> static -> index.html ( 자동으로 index페이지로 설정됨 )
+spring-boot는 static에서 index.html을 확인해보고 존재하면 실행시킨다.
+
+spring 공부법.
+spring.io에서 필요한 정보를 찾아서 사용할 수 있어야된다. ( keyword ) 
+spring.io -> Project -> Spring Boot -> LEARN -> 버전선택 -> Reference Doc. -> 키워드 선택.
+
+thymeleaf 템플릿 엔진.
+동적 페이지를 만들 수 있도록 해준다.
+
+컨트롤러 설정.
+java 클래스에 @Controller 설정.
+메소드에 @GetMapping( "url" ) 또는 @RequestMapping( "url" ) 등의 방법으로 url mapping.
+return "view"로 연결. ( view는 src -> resources -> templates에 html파일로 생성 )
+
+boot 웹 예시.
+@Controller
+public class 클래스이름 { 
+	@GetMapping( "url" )
+	public String 메소드이름( Model model ) { 
+		model.addAttribute( "변수이름", "데이터값" ) ;
+		return "view이름" ;
+	}
+}
+
+thymeleaf 사용방법.
+html파일에
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+...
+</head>
+<body>
+	<p th:text=" ${ el변수이름 } "></p>
+</body>
+</html>
+
+서버 재시작 없이 html 실행하는 방법.
+spring-boot-devtools 라이브러리를 추가하면 html파일을 컴파일만 해주면 서버 재시작 없이 view 변경 가능.
+
+
+
+ # 빌드하고 실행하기.
+
+빌드하기.
+cmd -> 프로젝트 경로 -> 윈도우 : gradlew.bat build , 리눅스 : ./gradlew build -> build 폴더 생성.
+
+빌드 확인하기.
+build 폴더 -> libs ->프로젝트명.jar 파일 확인.
+
+빌드 실행하기.
+cmd -> java -jar 파일이름 -> 웹브라우저에 해당 url 실행.
+
+주의사항.
+intellij에서 서버를 끄고 cmd에서 확인해야된다. ( server 두개를 동시에 킬 수 없다 )
+
+빌드 삭제하기.
+리눅스 : ./gradlew clean build.
+윈도우 : gradlew.bat clean build.
+build 폴더가 삭제된다.
+
+
+
+
+
+

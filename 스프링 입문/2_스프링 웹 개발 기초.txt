@@ -1,0 +1,73 @@
+
+ 스프링 웹 개발 기초.
+
+
+
+ # 정적 컨텐츠.
+
+MVC와 템플릿 엔진.
+JSP, PHP와 같은 템플릿 엔진을 통해 동적으로 어떠한 작업을 한 후 웹 브라우저에 전송하는 것.
+
+API.
+서버에서 JSON이라는 데이터 구조 포맷으로 클라이언트에게 전달해서 클라이언트가 필요한 방식으로 화면을 구성한다.
+
+정적 컨텐츠.
+서버에서 어떠한 작업을 하지 않고 파일을 그대로 웹 브라우저에 전송하는 것.
+
+정적 컨텐츠 사용방법.
+src -> main -> java -> resources -> static 폴더에 작성한다.
+localhost:8080/static에 생성한 파일이름 ;
+
+사용법 예시.
+localhost:8080/abc.html ;
+
+정적파일 실행 순서.
+웹 브라우저 url요청 -> 톰캣에 url요청 -> 스프링 컨테이너 controller에서 url확인 
+-> controller에 없으면 resources/static에 파일중에 url에서 요청한 이름의 파일이 있는지 확인.
+
+
+
+ # MVC와 템플릿 엔진.
+
+MVC Model, View, Controller.
+MVC1 : View에서 Controller 역할까지 수행했다.
+
+Thymeleaf의 장점.
+html파일을 웹브라우저에서 언제든지 열어서 확인할 수 있다.
+
+@RequestParam.
+Controller의 매개변수에서 Param을 받을때 사용하는 어노테이션.
+required = true가 기본값이여서 name이라는 param이 전송되지 않으면 400에러가 발생한다.
+
+MVC 실행 순서.
+웹 브라우저 url요청 -> 톰캣에 url요청 -> 스프링 컨테이너 controller에서 url확인 및 controller 코드 수행
+-> controller에서 return값으로 templates html view파일로 포워딩 -> view에서 작성한 코드 수행.
+
+
+
+ # API.
+
+@ResponseBody
+리턴값을 view를 거치지않고 그대로 웹 브라우저에 전송해 보여준다.
+객체에 어떠한 데이터를 담아서 보내줄 때 사용한다. ( JSON방식 - API 방식에서 사용 )
+
+JSON 방식.
+key-value 형태로 데이터를 저장하고 전송하는 방식을 의미한다.
+
+API 실행 순서.
+웹 브라우저 url요청 -> 톰캣에 url요청 -> controller에서 @ResponseBody가 있으면 view를 거치지 않고 응답.
+( return 타입이 객체일 경우 JSON방식으로 데이터를 만들어서 웹 브라우저로 응답한다 )
+
+HttpMessageConverter.
+리턴타입이 String이면 StringConverter가 동작해서 웹 브라우저에 응답. 
+리턴타입이 객체이면 JsonConverter가 동작해서 웹 브라우저에 JSON 형태로 응답. 
+spring-boot에 자동으로 library 추가되어있다.
+기본 문자처리 : StringHttpMessageConverter.
+기본 객체처리 : MappingJackson2HttpMessageConverter.
+
+정리.
+클라이언트의 HTTP Accept 헤더와 서버의 컨트롤러 반환 타입 정보 둘을 조합해서 
+"HttpMessageConverter"가 선택된다.
+
+
+

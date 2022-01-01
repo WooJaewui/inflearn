@@ -1,0 +1,76 @@
+
+ 스프링 빈과 의존관계 - 15~16강.
+
+
+
+ # 컴포넌트 스캔과 자동 의존관계 설정.
+
+@Controller.
+클래스에 @Controller를 붙여주면 스프링컨테이너에 클래스를 넣어준다.
+Controller 역할을 하는 클래스에 붙여준다.
+
+@Service
+클래스에 @Service를 붙여주면 스프링컨테이너에 클래스를 넣어준다.
+Service 역할을 하는 클래스에 붙여준다.
+
+@Repository
+클래스에 @Repository를 붙여주면 스프링컨테이너에 클래스를 넣어준다.
+Repository 역할을 하는 클래스에 붙여준다.
+
+@Autowired
+스프링컨테이너에 있는 클래스를 자동으로 연결해줄 때 사용한다.
+변수, 생성자, 메소드에 사용할 수 있다. ( Dependency Injection )
+
+스프링 빈을 등록하는 2가지 방법.
+컴포넌트 스캔과 자동 의존관계 설정. ( @Component - Controller, Service, Repository )
+자바 코드로 직접 스프링 빈 등록하기. ( 뒤에 자세히 설명 )
+
+빈 등록 주의사항.
+java에서 run한 클래스의 패키지 하위에 클래스들만 @ComponentScan한다.
+- @ComponentScan 범위를 바꾸면 모두 체크할 수 있다.
+스프링 빈을 등록할때 기본으로 싱글톤으로 등록한다. ( 유일하게 하나만 등록해서 공유한다 )
+- 설정으로 싱글톤이 아니게 설정할 수 있다.
+
+
+
+ # 자바 코드로 직접 스프링 빈 등록하기.
+
+자바 클래스 생성.
+SpringConfig 클래스 생성 -> 클래스에 @Configuration -> @Bean 추가.
+
+예시 코드.
+@Configuration
+public class SpringConfig { 
+	@Bean
+	public Service service( ) { 
+		return new Service( repository( ) ) ;  // DI
+	}
+	
+	@Bean
+	public Repository repository( ) { 
+		return new RepositoryImpl( ) ;
+	}
+} 
+
+주의사항.
+@Controller는 @Configuration으로 설정할 수 없다. 
+
+추가적인 설명.
+XML 설정은 요즘에 거의 사용하지 않는다.
+일반적인 컨트롤러, 서비스, 리포지토리는 컴포넌트 스캔을 사용한다.
+상황에 따라 변경해야 하면 설정을 통해 자바 코드로 빈을 등록해야한다.
+자세한 내용은 스프링 핵심 원리 강의에서 설명한다.
+
+DI 방식.
+DI는 필드 주입, setter 주입, 생성자 주입 3가지 방법이 있다. 
+필드 주입은 중간에 바꿀 수 있는 방법이 없어서 잘 사용하지 않는다. 
+setter 메소드는 중간에 다른사람이 변경해야 될 경우 사용. 
+생성자는 중간에 다른사람이 변경하지 않아도 될 경우 사용. ( 안전할 수 있다 )
+의존관계가 실행중에 동적으로 변하는 경우가 거의 없음으로 생성자 주입을 추천.
+
+@Autowired 주의사항.
+bean에 등록된 객체만 연결해준다.
+직접 생성한 객체는 연결해주지 않는다.
+
+
+

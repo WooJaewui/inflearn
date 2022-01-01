@@ -1,0 +1,48 @@
+
+ 회원 관리 예제 - 웹 MVC 개발 
+ 17 ~ 19강
+
+
+
+ # 회원 웹 기능 - 홈 화면 추가.
+
+url 우선순위.
+Controller에서 url을 확인 -> 없으면 정적 파일 확인 ( resources -> static )
+
+view 디렉토리 위치.
+resources -> templates.
+
+thymeleaf 사용법.
+<html xmlns:th="http://www.thymeleaf.org">
+~~
+</html>
+
+
+
+ # 회원 웹 기능 - 등록.
+
+url 메소드.
+get : url을 통해 요청하는 것.
+post : 데이터 전송을 요청하는 것. ( Content-type을 통해 여러가지 방식으로 보낼 수 있다 )
+
+실행순서.
+controller에서 url을 찾고 로직을 실행 -> viewResolver를 통해 resources/templates에 view로 포워드한다.
+-> view에서 input에 name=키, value=값으로 action url로 넘겨준다 -> controller에서 매개변수로 데이터를 받는다.
+
+
+
+ # 회원 웹 기능 - 조회.
+
+thymeleaf 사용하기.
+<html xmlns:th="http://www.thymeleaf.org">
+	<p th:each = "변수이름 : ${ List } ">
+		<p th:text = "${ 변수이름.getter메소드 } "></p>
+	</p>
+</html>
+
+현재 상황.
+메모리에 저장하고 있기 때문에 서버를 재시작하면 데이터가 삭제된다.
+데이터를 DB나 파일로 저장해야 영구 저장된다.
+
+
+

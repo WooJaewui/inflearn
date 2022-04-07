@@ -1,0 +1,143 @@
+
+ 프로젝트 환경설정.
+
+
+
+ # 프로젝트 생성.
+
+스프링 부트 프로젝트 생성.
+start.spring.io
+
+Dependencies.
+Spring Web.
+Thymeleaf.
+Spring Data JPA.
+H2 Database. ( 개발, 테스트에 유리함 )
+Lombok.
+
+파일 import.
+1. start.spring.io를 통해 압축 파일을 다운받는다.
+2. 원하는 디렉토리에 압축을 풀고, IntelliJ에서 build.gradle을 open 또는 import한다.
+
+gradle의 기능.
+하나의 라이브러리를 dependency하면 하위 라이브러리를 모두 dependency해준다.
+
+롬복 다운로드 및 설정.
+settings -> plugins -> lombok. ( 다운로드 )
+Annotation Processors -> Enable annotation processing. ( 설정 )
+
+
+
+ # 라이브러리 살펴보기.
+
+커널에서 의존관계 확인하기.
+cmd -> 소스파일 디렉토리 -> gradlew dependencies.
+
+라이브러리.
+HikariCP : 커넥션 풀.
+slf4J : 로그 관련 인터페이스 모음. ( log4j, logback 등의 구현체를 통해 사용 )
+mokito : 테스트 목을 만들어주는 프레임워크.
+assertj : 테스트를 편하게 해주는 유틸리티 라이브러리.
+
+핵심 라이브러리.
+스프링 MVC.
+스프링 ORM.
+JPA, 하이버네이트.
+스프링 데이터 JPA.
+
+기타 라이브러리.
+H2 데이터베이스 클라이언트.
+커넥션 풀 : HikariCP.
+WEB : thymeleaf.
+로깅 SLF4J & LogBack.
+테스트.
+
+참고.
+스프링 데이터 JPA는 스프링과 JPA를 먼저 이해하고 사용해야 하는 응용기술이다.
+
+
+
+ # View 환경 설정.
+
+타임리프 공식사이트.
+thymeleaf.org
+
+타임리프의 특징.
+Natural template : 
+
+스프링 참고.
+spirng.io -> Learn -> guide -> 키워드 검색.
+serving을 검색하면 thymeleaf에 관해서 볼 수 있다.
+
+
+
+ # view 환경 설정.
+
+예시 코드.
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+	... 생략 ...
+</head>
+<body>
+	<p th:text=" 'hello' + ${data}"></p>
+</body>
+</html>
+
+뷰 소스 파일 디렉토리 구조.
+● resources -> static : index 페이지를 담당하는 페이지 소스파일을 만든다.
+● resoufces -> templates : thymeleaf와 같은 templates view 페이지 소스파일을 만든다.
+
+타임리프 사용시 설정할 라이브러리.
+implementation 'org.springframework.boot:spring-boot-devtools'
+	● view 소스 파일을 수정하고 서버를 재시작하지 않고 수정한 view 소스파일을 Recompile하면 수정이 반영됨.
+
+
+
+ # H2 데이터베이스 설치.
+
+H2 데이터베이스.
+개발이나 테스트 용도로 가볍고 편리한 DB, 웹 화면 제공.
+
+실행하기.
+cmd 창에서 h2.bat을 실행한다.
+	● 주의사항 : 자바로 실행되기 때문에 JDK가 깔려 있어야 실행 가능하다.
+JDBC URL.
+	● db 파일을 생성할 경로를 지정해 줘야함. ( 로컬 디렉토리 설정 )
+	● 디렉토리 경로에 jpashop.mv.db가 생성됨.
+	● db 파일을 생성한 후 "jdbc:h2:tcp://localhost/경로" 를 통해 접근해야 함.
+
+
+
+ # JPA와 DB 설정, 동작 확인.
+
+application.yml
+application.properties 역할을 한다.
+
+스프링 부트 공부법.
+spring.io -> projects -> Spring Boot -> Learn -> Reference Doc.
+
+로그 설정.
+show_sql : true => systemout을 통해서 로그를 찍는다. ( 사용 X )
+org.hibernate.SQL => Logger를 통해서 로그를 찍는다. ( 사용 O )
+
+트랜잭션.
+테스트 코드에 @Transactional이 있으면 테스트 수행 후에 Rollback한다.
+@Rollback( false )를 통해 롤백을 하지 않도록 설정할 수 있다.
+
+빌드하기.
+cmd -> 워크스페이스 경로 -> gradlew clean build.
+
+실행.
+워크스페이스 경로 -> build -> libs에 jar파일 확인 -> java -jar 파일이름.
+
+쿼리 파라미터 로그 남기기.
+1. application.yml 설정.
+	● org.hibernate.type: trace
+2. 외부라이브러리. ( P6Spy, Datasource Proxy, ... 등 )
+	● P6Spy 방법.
+	● implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+	● 라이브러리만 추가해주면 SQL을 수행하면 파라미터를 로그로 찍어준다.
+	● 운영시 로그 남기는 거에 대한 성능 테스트를 꼭 해봐야한다.
+
+
+

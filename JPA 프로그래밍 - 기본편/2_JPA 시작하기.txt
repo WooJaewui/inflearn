@@ -1,0 +1,118 @@
+
+ JPA 시작하기.
+
+
+
+ # Hello JPA - 프로젝트 생성.
+
+H2 DB
+다운로드.
+	● h2database.com.
+실행.
+	● cmd -> cd 설치한 디렉토리 -> h2.bat.
+	● localhost:8082 ( h2 db 접속 )
+특징.
+	● 최고의 실습용 DB. 
+	● 가볍다.
+	● 웹용 쿼리툴 제공.
+	● MySQL, Oracle 데이터베이스 시뮬레이션 기능.
+	● 시퀀스, AUTO INCREMENT 기능 지원.
+
+Maven 라이브러리 설정.
+<!-- JPA 하이버네이트 -->
+<dependency>
+	<groupId>org.hibernate</groupId>
+	<artifactId>hibernate-entitymanager</artifactId>
+	<version>5.3.10.Final</version>
+</dependency>
+
+<!--H2 데이터베이스 -->
+<dependency>
+	<groupId>com.h2database</groupId>
+	<artifactId>h2</artifactId>
+	<version>1.4.199</version>
+</dependency>
+
+JPA 설정하기.
+필수 속성.
+	● DB 연결에 필요한 정보들.
+데이터베이스 방언.
+	● name="변수이름" value="org.hibernate.dialect.연결할db"
+	● JPA는 특정 데이터베이스에 종속 X.
+	● 각각의 데이터베이스가 제공하는 SQL 문법과 함수는 조금씩 다름.
+	● 방언 : SQL 표준을 지키지 않는 특정 데이터베이스만의 고유한 기능.
+	● 하이버네이트는 40가지 이상의 방언을 지원함.
+옵션.
+	● hibernate.show_sql : DB에 날라가는 쿼리를 확인할 수 있음.
+	● hibernate.format_sql : 쿼리에 형태를 보기 좋게 만들어 줌.
+	● hibernate.use_sql_comments : 쿼리 위에 주석을 통해 어떤 sql인지 간략하게 작성해 줌.
+	● 자세한 내용은 뒤에서 배움.
+
+
+
+ # Hello JPA - 애플리케이션 개발.
+
+( JPA 구동 방식 이미지 )
+
+JPA 사용 예시 코드.
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+EntityManager em = emf.createEntityManager();
+em.close();
+emf.close();
+
+DB와 매핑할 객체 만들기.
+@Entity.
+public class Member {
+	@Id
+	private Long id;
+	private String name;
+
+	// getter, setter 생성.
+	...
+}
+@Entity : DB와 매핑할 객체에 작성.
+@Table : Entity 객체와 매핑될 Table을 지정해 줄 수 있다. 
+@Id : primary key 변수에 작성.
+@Column : 변수와 매핑될 Column을 지정해 줄 수 있다.
+
+insert 하기.
+EntityManagerFactory emt = Persistence.createEntityManagerFactory( "persistence.xml에 작성한 name이름" ) ;
+EntityManager em = emt.createEntityManager( ) ;
+EntityTransaction tx = em.getTransaction( ) ;
+tx.begin( ) ;
+try { 
+	Member member = new Member( ) ;
+	membet.set변수( "값" ) ;
+	...
+	em.persist( member ) ;
+	tx.commit( ) ;
+} catch ( Exception e ) {
+	tx.rollback( ) ;
+} finally { 
+	em.close( ) ;
+	emt.close( ) ;
+}
+
+주의사항.
+엔티티 매니저 팩토리는 하나만 생성해서 애플리케이션 전체에서 공유.
+엔티티 매니저는 쓰레드간 공유 X ( 사용 후 버려야 한다 )
+JPA의 모든 데이터 변경은 트랜잭션 안에서 실행.
+
+쿼리를 사용하는 방법.
+sql = "select m from Member as m"
+List<Member> result = em.createQuery( sql, Member.class ).getResultList( ) ;
+
+JPQL Java Persistence Query Language.
+개념.
+	● JPA는 SQL을 추상화한 JPQL이라는 객체 지향 쿼리 언어 제공.
+	● 테이블이 아닌 객체를 대상으로 검색하는 객체 지향 쿼리.
+특징.
+	● JPA를 사용하면 엔티티 객체를 중심으로 개발.
+	● 문제는 검색 쿼리.
+	● 검색을 할 때도 테이블이 아닌 엔티티 객체를 대상으로 검색.
+	● 모든 DB 데이터를 객체로 변환해서 검색하는 것은 불가능.
+	● JSQL은 엔티티 객체를 대상으로 쿼리.
+	● 뒤에서 아주 자세히 다룸.
+
+
+

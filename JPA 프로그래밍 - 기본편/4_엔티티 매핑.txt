@@ -34,6 +34,7 @@ uniqueConstraints 속성.
 	● unique 제약조건에 이름까지 설정할 수 있다. ( 컬럼단계에서는 이름 설정 X )
 
 
+
  # 데이터베이스 스키마 자동 생성.
 
 데이터베이스 스키마 자동 생성.
@@ -102,23 +103,57 @@ LocalDateTime : 년월시간을 표현하는 날짜 클래스.
 
  # 기본 키 매핑.
 
+기본키 매핑 방법.
+@Id : 직접 하당.
+@GeneratedValue : 자동 생성.
+
+@GeneratedValue 속성.
+strategy 속성.
+	● GenerationType.AUTO : 기본값.
+	● GenerationType.IDENTITY : auito_increament 역할을 수행한다. ( 타입 상관 없음 )
+	● GenerationType.SEQUENCE : SEQUENCE 역할을 수행한다. ( Long 또는 Integer를 사용 )
+	● GenerationType.Table : 키 생성 전용 테이블을 하나 만들어서 시퀀스를 흉내내는 전략.
+
+@SequenceGenerator.
+GenerationType.SEQUENCE 사용시 시퀀스의 이름 등 세부사항을 설정할 수 있다.
+클래스 단계에서 사용한다.
+name을 통해 시퀀스를 사용하려는 변수과 매핑한다.
+
+@TableGenerator.
+GenerationType.Table 사용시 테이블의 세부사항을 설정할 수 있다.
+클래스 단계에서 사용한다.
+name을 통해 테이블을 사용하려는 변수과 매핑한다.
+
+권장하는 식별자 전략.
+기본 키 제약 조건 : not null, 유일, 변하면 안된다.
+	● 미래까지 이 조건을 만족하는 자연키는 찾기 어렵다.
+	● 권장 : Long형 + 대체키( 시퀀스, UUID 등 ) + 키 생성전략 사용. ( 시퀀스, AUTO_INCREMENT )
+
+IDENTITY 전략의 특징.
+영속성 관리를 위해 persist 호출시 DB에 SQL이 바로 실행된다. ( DB INSERT 전에 Id를 알 수 없기 때문에 )
+
+SEQUENCE 전략의 특징.
+영속성 관리를 위해 persist 호출시 DB에서 sequence 값을 가져온다.
+가져온 seqeunce 값을 Id 변수에 매핑한다.
+
+SEQUENCE의 성능 최적화.
+allocationSize = 50
+	● DB에서는 sequence가 호출될 때마다 50씩 증가한다.
+	● allocationSize를 설정하면 persist를 호출 시 sequence를 두 번 실행한다.
+	● 두 번 실행 후 a ~ b 사이의 값까지 persist 수행 시 메모리에서 ++하면서 Id를 사용한다.
 
 
 
+ # 실전 예제1 - 요구사항 분석과 기본 매핑.
 
+스프링 부트 JPA 특징.
+java의 카멜 방식과 DB 저장 스네이크 방식을 알아서 바꿔준다. ( Spring boot 메뉴얼 확인해보기 )
 
-
-
-
-
-
-
-
-
-
-
-
-
+데이터 중심 설계의 문제점.
+객체 설계를 테이블 설계에 맞춘 방식.
+테이블의 외래키를 객체에 그대로 가져옴.
+객체 그래프 탐색이 불가능.
+참조가 없으므로 UML도 잘못됨.
 
 
 

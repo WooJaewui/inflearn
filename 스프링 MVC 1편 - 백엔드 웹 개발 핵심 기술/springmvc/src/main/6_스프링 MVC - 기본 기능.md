@@ -371,6 +371,156 @@
 
 > ## HTTP 메시지 컨버터.
 
+### 개요.
+- 뷰 템플릿으로 HTML을 생성해서 응답하는 것이 아니라, HTTP API처럼 JSON 데이터를 HTTP 메시지 바디에서 직접 읽거나 쓰는 경우 HTTP 컨버터를 사용.
+
+### @ResponseBody.
+- HTTP Response Boy에 문자 내용을 직접 반환.
+- 기본 문자처리 : StringHttpMessageConverter.
+- 기본 객체처리 : MappingJackson2HttpMessageConverter.
+- byte 처리 등등 기타 여러 HttpMessageConverter가 기본으로 등록되어 있음.
+
+### 참고.
+- 응답의 경우 클라이언트의 HTTP Accept 헤더와 서버의 컨트롤러 반환 타입 정보 둘을 조합해서 HttpMessageConverter가 선택된다.
+
+### 스프링 MVC의 메시지 컨버터 적용 사례.
+1. HTTP 요청 : @RequestBody, HttpEntity, RequestEntity.
+2. HTTP 응답 : @ResponseBody, HttpEntity, ResponseEntity.
+
+### HttpMessageConverter.
+- Http 요청, Http 응답 둘다 사용된다.
+- canRead(), canWrite() : 메시지 컨버터가 해당 클래스, 미디어타입을 지원하는지 체크.
+- read(), write() : 메시지 컨버터를 통해서 메시지를 읽고 쓰는 기능.
+
+### 스프링 부트 기본 메시지 컨버터.
+- ByteArrayHttpMessageConverter. (0순위)
+  - StringHttpMessageConverter. (1순위)
+- MappingJackson2HttpMessageConverter. (2순위)
+- 스프링 부트는 다양한 메시지 컨버터를 제공하는데, 대상 클래스 타입과 미디어 타입(Content-type, Accept) 둘을 체크해서 사용여부를 결정한다.
+- 만약 만족하지 않으면 다음 메시지 컨버터로 우선순위가 넘어간다.
+
+### ByteArrayHttpMessageConverter.
+- byte[] 데이터를 처리한다.
+- 클래스 타입 : byte[], 미디어타입 : '*/*'
+- 요청 예) @RequestBody byte[] data.
+- 응답 예) @ResponseBody return byte[] (application/octet-stream)
+
+### StringHttpMessageConverter.
+- String 문자로 데이터를 처리한다.
+- 클래스 타입 : String, 미디어타입 : '*/*'
+- 요청 예) @RequestBody String data.
+- 응답 예) @ResponseBody return "ok" (text/plain)
+
+### MappingJackson2HttpMessageConverter.
+- Map, 객체.
+- 클래스 타입 : 객체 또는 HashMap, 미디어타입 : application/json 관련.
+- 요쳥 예) @RequestBody HelloData data
+- 응답 예) @ResponseBody return helloData (application/json 관련)
+
+### HTTP 요청 데이터 읽기.
+- HTTP 요청이 오고, 컨트롤러에서 @RequestBody, HttpEntity 파라미터를 사용한다.
+- 메시지 컨버터가 메시지를 읽을 수 있는지 확인하기 위해 canRead()를 호출한다.
+  - 대상 클래스 타입을 지원하는가.
+  - HTTP 요청의 Content-Type 미디어 타입을 지원하는가.
+- canRead() 조건을 만족하면 read()를 호출해서 객체를 생성하고, 반환한다.
+
+### HTTP 응답 데이터 생성.
+- 컨트롤러에서 @ResponseBody, HttpEntity 로 값이 반환된다.
+- 메시지 컨버터가 메시지를 쓸 수 있는지 확인하기 위해 canWrite()를 호출한다.
+  - 대상 클래스 타입을 지원하는가.
+  - Http 요청의 Accept 미디어 타입을 지원하는가. (@RequestMappin의 produces도 확인)
+- canWrite() 조건을 만족하면 write()를 호출해서 HTTP 응답 메시지 바디에 데이터를 생성한다.
+
+### 예시 코드.
+    @ReuqestMapping
+    void hello(@RequestBody String data() { ... }
+- ByteArrayHttpMessageConveter를 확인한다. (맞지 않음)
+- StringHttpMessageConveter를 확인한다. (맞음 - RequestBody를 String으로 변환함)
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+> ## 요청 매핑 핸들러 어댑터 구조.
+
+### 개요.
+- 그렇다면 HTTP 메시지 컨버터는 스프링 MVC 어디쯤에서 사용되는 것일까?
+- 다음 그림에서는 보이지 않는다.
+- 모든 비밀은 RequestMappingHandlerAdapter에 있다.
+
+### RequestMappingHandlerAdapter.
+- ArgumentResolver.
+   - 어노테이션 기반의 컨트롤러는 매우 다양한 파라미터를 사용할 수 있었다.
+   - 이렇게 파라미터를 유연하게 처리할 수 있유가 바로 ArgumentResolver 덕분이다.
+   - RequestMappingHandlerAdapter는 ArgumentResolver를 호출해서 컨트롤러(핸들러)가 필요로 하는 다양한 파라미터의 값을 생성한다.
+   - 모든 파라미터의 값이 준비되면 컨트롤러를 호출하면서 값을 넘겨준다.
+   - 스프링은 30개가 넘는 ArgumentResolver를 기본으로 제공한다.
+
+### 동작 방식.
+- ArgumentResolver의 supportsParameter()를 호출해서 해당 파라미터를 지원하는지 체크하고, 지원하면 resolveArgument()를 호출해서 실제 객체를 생성.
+- 그리고 이렇게 생성된 객체가 컨트롤러 호출시에 넘어온다.
+
+### ReturnValueHandler.
+- HandlerMethodReturnValueHandler를 줄여서 ReturnValueHandler라 부른다.
+- ArgumentResolver와 비슷한데, 이것은 응답 값을 변환하고 처리한다.
+- 컨트롤러에서 String으로 뷰 이름을 반환해도, 동작하는 이유가 바로 ReturnValueHandler 덕분이다.
+- 스프링은 10여개가 넘는 ReturnValueHandler를 지원한다.
+
+### HTTP 메시지 컨버터.
+- ArgumentResolver, ReturnValueHanlder가 사용한다.
+- 요청의 경우.
+  - @RequestBody를 처리하는 ArgumentResolver가 있고, HttpEntity를 처리하는 ArgumentResolver가 있다.
+  - 이 ArgumentResolver들이 HTTP 메시지 컨버터를 사용해서 필요한 객체를 생성하는 것이다. 
+  - read()를 호출.
+  - HttpEntityMethodProcessor. (supportsParameter(), supportsReturnType(), resolveArgument(), readConverters())
+  - RequestResponseBodyMethodProcessor. (supportsParameter(), supportsReturnType(), resolveArgument(), readConverters())
+- 응답의 경우.
+  - @ResponseBody와 HttpEntity를 처리하는 ReturnValueHandler가 있다.
+  - 그리고 여기에서 HTTP 메시지 컨버터를 호출해서 응답 결과를 만든다. 
+  - write()를 호출.
+  - HttpEntityMethodProcessor. (supportsParameter(), supportsReturnType(), resolveArgument())
+  - RequestResponseBodyMethodProcessor. (supportsParameter(), supportsReturnType(), resolveArgument(), readConverters())
+
+### 확장.
+- 스프링은 다음을 모두 인터페이스로 제공한다. 따라서 필요하면 언제든지 기능을 확장할 수 있다.
+- HandlerMethodArgumentResolver.
+- HandlerMethodResturnValueHandler
+- HttpMessageConverter.
+- 스프링이 필요한 대부분의 필요한 기능을 제공하기 때문에 실제 기능을 확장할 일이 많지는 않다.
+- 기능 확장은 'WebMvcConfigurer' 를 상속받아서 스프링 빈으로 등록하면 된다.
+
+### WebMvcConfigurer.
+- addArgumentResolver.
+- addReturnValueHandler.
+- 기타 등등 설정을 할 수 있다.
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+> ## 정리.
+
+### 로깅.
+- slf4j, logback 사용.
+
+### 로그 사용시 장점.
+- 환경에 따라 로그 레벨을 다르게 설정할 수 있다.
+
+### 요청 매핑.
+- @RequestMapping 여러 설정들.
+- value, produces(content-type), headers, @PathVariable
+
+### 요청 데이터 방식.
+1. GET - 쿼리 파라미터. (쿼리 파라미터)
+2. POST - HTML Form. (쿼리 파라미터)
+3. HTTP message body. (메시지 컨버터)
+
+### @RequestMapping.
+- consumes.
+  - 소비가능한 미디어 타입의 목록을 지정해서 주요한 매핑을 제한할 수 있다.
+  - Content-Type이 consumes에 명시한 media-type과 같아야 한다.
+- produces.
+  - 
+
+
+
+
 
 
 

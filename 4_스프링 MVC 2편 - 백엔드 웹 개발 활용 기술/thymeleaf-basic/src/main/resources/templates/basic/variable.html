@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Spring EL 표현식.</h1>
+<ul>
+    <h5>Object</h5>
+    <li th:text="${user.username}"></li>
+    <li th:text="${user['username']}"></li>
+    <li th:text="${user.getUsername()}"></li>
+</ul>
+<ul>
+    <h5>List</h5>
+    <li th:text="${users[0].username}"></li>
+    <li th:text="${users[0]['username']}"></li>
+    <li th:text="${users[0].getUsername()}"></li>
+</ul>
+<ul>
+    <h5>List</h5>
+    <li th:text="${userMap['userA'].username}"></li>
+    <li th:text="${userMap['userA']['username']}"></li>
+    <li th:text="${userMap['userA'].getUsername()}"></li>
+</ul>
+
+<h1>지역 변수 - (th:with)</h1>
+<div th:with="first=${users[0]}">
+    <p>처음 사람의 이름은 <span th:text="${first.username}"></span></p>
+</div>
+</body>
+</html>

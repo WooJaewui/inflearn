@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head xmlns:th="http://www.thymleaf.org"></head>
+<body>
+    <li>default = <span th:text="${localDateTime}"></span></li>
+    <li>default = <span th:text="${#temporals.format(localDateTime, 'yyyy-MM-dd HH:mm:ss')}"></span></li>
+
+    <li> <span th:text="${#temporals.year(localDateTime)}"></span></li>
+    <li> <span th:text="${#temporals.month(localDateTime)}"></span></li>
+    <li> <span th:text="${#temporals.day(localDateTime)}"></span></li>
+</body>
+</html>

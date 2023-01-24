@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymleaf.org">
+<head th:fragment="common_header(title, links)">
+    <title th:replace="${title}">Title</title>
+
+    <!-- 공통 -->
+    <link rel="stylesheet" type="text/css" media="all" th:hreaf="@{/css/awesomeapp.css}">
+    <link rel="shortcut icon" th:hreaf="@{/images/favicon.ico}">
+    <script type="text/javascript" th:src="@{/sh/scripts/codebase.js}"></script>
+
+    <th:block th:replace="${links}"/>
+</head>
+<body>
+
+</body>
+</html>

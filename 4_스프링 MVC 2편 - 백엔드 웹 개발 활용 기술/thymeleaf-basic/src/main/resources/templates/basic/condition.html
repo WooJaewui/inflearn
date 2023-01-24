@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table>
+        <tr th:each="user : ${users}">
+            <td><span th:text="${user.age}"></span></td>
+            <td><span th:text="'미성년자'" th:if="${user.age lt 20}"></span></td>
+            <td><span th:text="'성년'" th:unless="${user.age lt 20}"></span></td>
+            <td th:switch="${user.age}">
+               <span th:text="10살" th:case="10"></span>
+               <span th:text="20살" th:case="20"></span>
+               <span th:text="30살" th:case="30"></span>
+            </td>
+        </tr>
+    </table>
+
+
+</body>
+</html>

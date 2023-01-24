@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>속성 설정</h1>
+    <input type="text" name="mock" th:name="userA">
+    <input type="text" class="text" name="mock" th:name="userA" th:attrappend="class=' like'">
+
+    <h1>checked</h1>
+    <input type="checkbox" class="text" th:checked="false">
+    <input type="checkbox" class="text" th:checked="true">
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymleaf.org"></html>
+<body>
+<h1>기본 객체</h1>
+    <ul>
+        <li>request = <span th:text="${#request}"></span></li>
+        <li>request = <span th:text="${#response}"></span></li>
+        <li>request = <span th:text="${#session}"></span></li>
+        <li>request = <span th:text="${#servletContext}"></span></li>
+        <li>request = <span th:text="${#locale}"></span></li>
+    </ul>
+<h1>편의 객체</h1>
+    <ul>
+        <li>Request Parameter = <span th:text="${param.paramData}"></span></li>
+        <li>session = <span th:text="${session.sessionData}"></span></li>
+        <li>spring bean = <span th:text="${@helloBean.hello('Spring!')}"></span></li>
+    </ul>
+</body>
+</html>

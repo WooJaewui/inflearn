@@ -35,4 +35,5 @@ public class ItemServiceV1 implements ItemService {
     public List<Item> findItems(ItemSearchCond cond) {
         return itemRepository.findAll(cond);
     }
+
 }

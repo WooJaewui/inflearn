@@ -1,7 +1,7 @@
-package io.springbatch.springbatchlecture.dbjob;
-
+package io.springbatch.springbatchlecture.jobexecution;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -10,11 +10,12 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class DBJobConfiguration {
+@Slf4j
+public class JobExecutionConfiguration {
 
-    /*private final JobBuilderFactory jobBuilderFactory;
+    private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
@@ -29,19 +30,21 @@ public class DBJobConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .tasklet((contribution, chunkContext) -> {
-                    System.out.println("step1 was executed");
+                    log.info("============== step1 was execute =============");
                     return RepeatStatus.FINISHED;
-                }).build();
+                })
+                .build();
     }
 
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
-                    System.out.println("step2 was executed");
+                    log.info("============== step2 was execute =============");
+                    //throw new RuntimeException("step2 has failed");
                     return RepeatStatus.FINISHED;
-                }).build();
-    }*/
-
+                })
+                .build();
+    }
 
 }

@@ -1,5 +1,4 @@
-package io.springbatch.springbatchlecture.dbjob;
-
+package io.springbatch.springbatchlecture.job;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -10,12 +9,13 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class DBJobConfiguration {
+public class JobConfiguration {
 
     /*private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+
 
     @Bean
     public Job job() {
@@ -34,6 +34,7 @@ public class DBJobConfiguration {
                 }).build();
     }
 
+
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
@@ -42,6 +43,5 @@ public class DBJobConfiguration {
                     return RepeatStatus.FINISHED;
                 }).build();
     }*/
-
 
 }

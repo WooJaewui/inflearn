@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 @Slf4j
 public class HelloJobConfiguration {
 
-    private final JobBuilderFactory jobBuilderFactory;
+    /*private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
@@ -48,6 +48,6 @@ public class HelloJobConfiguration {
                     return RepeatStatus.FINISHED;
                 })
                 .build();
-    }
+    }*/
 
 }

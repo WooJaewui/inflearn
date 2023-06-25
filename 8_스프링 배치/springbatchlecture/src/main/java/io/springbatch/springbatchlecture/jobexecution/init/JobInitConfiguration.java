@@ -1,4 +1,4 @@
-package io.springbatch.springbatchlecture.domain.step.joblauncher;
+package io.springbatch.springbatchlecture.jobexecution.init;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +13,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class JobLauncherConfiguration {
+public class JobInitConfiguration {
 
     /*private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
 
     @Bean
-    public Job job() {
-        return jobBuilderFactory.get("job")
+    public Job batchJob1() {
+        return jobBuilderFactory.get("batchJob2")
                 .start(step1())
                 .next(step2())
                 .build();
@@ -31,7 +31,7 @@ public class JobLauncherConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .tasklet((contribution, chunkContext) -> {
-                    Thread.sleep(5000);
+                    log.info("==== step1 was executed ======");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
@@ -41,9 +41,10 @@ public class JobLauncherConfiguration {
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunkContext) -> {
+                    log.info("==== step2 was executed ======");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
-    }
-*/
+    }*/
+
 }

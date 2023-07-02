@@ -1,13 +1,13 @@
-package io.springbatch.springbatchlecture.jobexecution.jobbuilderfactory;
+package io.springbatch.springbatchlecture.jobexecution.simplejob;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,26 +16,34 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class JobBuilderFactoryConfiguration {
+public class SimpleJobConfiguration {
 
     /*private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
 
     @Bean
-    public Job batchJob1() {
-        return jobBuilderFactory.get("batchJob1")
+    public Job batchJob() {
+        return jobBuilderFactory.get("batchJob")
                 .start(step1())
                 .next(step2())
-                .build();
-    }
+                .next(step3())
+                .incrementer(new RunIdIncrementer())
+                .validator(parameters -> {
 
-    @Bean
-    public Job batchJob2() {
-        return jobBuilderFactory.get("batchJob2")
-                .start(flow())
-                .next(step5())
-                .end()
+                })
+                .preventRestart()
+                .listener(new JobExecutionListener() {
+                    @Override
+                    public void beforeJob(JobExecution jobExecution) {
+
+                    }
+
+                    @Override
+                    public void afterJob(JobExecution jobExecution) {
+
+                    }
+                })
                 .build();
     }
 
@@ -61,45 +69,12 @@ public class JobBuilderFactoryConfiguration {
     }
 
     @Bean
-    public Flow flow() {
-
-        FlowBuilder<Flow> flowFlowBuilder = new FlowBuilder<>("flow");
-        flowFlowBuilder.start(step3())
-                .next(step4())
-                .end();
-
-        return flowFlowBuilder.build();
-    }
-
-
-
-    @Bean
     public Step step3() {
         return stepBuilderFactory.get("step3")
                 .tasklet((contribution, chunkContext) -> {
+                    chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.FAILED);
+                    contribution.setExitStatus(ExitStatus.STOPPED);
                     log.info("==== step3 was executed ======");
-                    return RepeatStatus.FINISHED;
-                })
-                .build();
-    }
-
-
-    @Bean
-    public Step step4() {
-        return stepBuilderFactory.get("step4")
-                .tasklet((contribution, chunkContext) -> {
-                    log.info("==== step4 was executed ======");
-                    return RepeatStatus.FINISHED;
-                })
-                .build();
-    }
-
-
-    @Bean
-    public Step step5() {
-        return stepBuilderFactory.get("step5")
-                .tasklet((contribution, chunkContext) -> {
-                    log.info("==== step5 was executed ======");
                     return RepeatStatus.FINISHED;
                 })
                 .build();

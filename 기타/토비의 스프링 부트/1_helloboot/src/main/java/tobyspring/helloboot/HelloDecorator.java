@@ -1,5 +1,6 @@
 package tobyspring.helloboot;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,5 +15,10 @@ public class HelloDecorator implements HelloService {
     @Override
     public String sayHello(String name) {
         return "*" + helloService.sayHello(name) + "*";
+    }
+
+    @Override
+    public int countOf(String name) {
+        return helloService.countOf(name);
     }
 }

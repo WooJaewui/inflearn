@@ -27,7 +27,6 @@ public class Item {
     private int price;
     private int stockQuantity;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "items", fetch = LAZY)
     private List<Category> categories = new ArrayList<>();
 

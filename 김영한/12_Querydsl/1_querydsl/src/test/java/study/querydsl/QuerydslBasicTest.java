@@ -1,7 +1,12 @@
 package study.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -12,7 +17,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
+import study.querydsl.dto.UserDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.QTeam;
@@ -238,7 +248,7 @@ public class QuerydslBasicTest {
     }
 
 
-    @Test
+    //@Test
     void containTest() {
         List<Integer> list = Arrays.asList(1,2,3);
 
@@ -483,5 +493,263 @@ public class QuerydslBasicTest {
             System.out.println(s);
         }
     }
+
+
+    @Test
+    void simpleProjection() {
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+    }
+
+
+    @Test
+    void tupleProjection() {
+        List<Tuple> result = queryFactory
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println(tuple);
+            System.out.println(tuple.get(member.username));
+            System.out.println(tuple.get(member.age));
+        }
+    }
+
+
+    @Test
+    void findDtoByJPQL() {
+        List<MemberDto> resultList = em.createQuery("select new study.querydsl.dto.MemberDto(m.username, m.age) from Member m", MemberDto.class)
+                .getResultList();
+
+        for (MemberDto memberDto : resultList) {
+            System.out.println(memberDto);
+            System.out.println(memberDto.getUsername() + " " + memberDto.getAge());
+        }
+    }
+
+
+    @Test
+    void findDtoBySetter() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.bean(
+                        MemberDto.class
+                        , member.username
+                        , member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println(memberDto);
+        }
+    }
+
+
+    @Test
+    void findDtoByField() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.fields(
+                        MemberDto.class
+                        , member.username
+                        , member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println(memberDto);
+        }
+    }
+
+
+    @Test
+    void findDtoByConstructor() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.constructor(
+                        MemberDto.class
+                        , member.username
+                        , member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println(memberDto);
+        }
+    }
+
+
+    @Test
+    void findDtoByTest() {
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<UserDto> result = queryFactory
+                .select(Projections.fields(
+                        UserDto.class
+                        , member.username.as("name")
+                        , ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(memberSub.age.max())
+                                        .from(memberSub), "age"
+                        )
+                ))
+                .from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println(userDto);
+        }
+    }
+
+
+    @Test
+    void findDtoByQueryProjection() {
+        List<MemberDto> result = queryFactory
+                .select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println(memberDto);
+        }
+    }
+
+
+    @Test
+    void dynamicQuery_BooleanBuilder() {
+        String usernameParam = null;
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember1(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember1(String usernameParam, Integer ageParam) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+        if (usernameParam != null) {
+            builder.and(member.username.eq(usernameParam));
+        }
+
+        if (ageParam != null) {
+            builder.and(member.age.eq(ageParam));
+        }
+
+        return queryFactory
+                .selectFrom(member)
+                .where(builder)
+                .fetch();
+    }
+
+
+    @Test
+    void dynamicQuery_WhereParam() {
+        String usernameParam = null;
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        //assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return queryFactory
+                .selectFrom(member)
+                .where(allEq(usernameCond, ageCond))
+                .fetch();
+    }
+
+    private BooleanBuilder usernameEq(String usernameCond) {
+        return usernameCond != null ? new BooleanBuilder(member.username.eq(usernameCond)) : new BooleanBuilder();
+    }
+
+    private BooleanBuilder ageEq(Integer ageCond) {
+        return ageCond != null  ? new BooleanBuilder(member.age.eq(ageCond)) : new BooleanBuilder();
+    }
+
+    private BooleanBuilder allEq(String usernameCond, Integer ageCond) {
+        return new BooleanBuilder(usernameEq(usernameCond).and(ageEq(ageCond)));
+    }
+
+
+    @Test
+    //@Rollback(false)
+    void bulkUpdate() {
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        em.flush();
+        em.clear();
+
+        System.out.println(count);
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member member1 : result) {
+            System.out.println(member1.getUsername());
+        }
+    }
+
+    @Test
+    //@Commit
+    void bulkAdd() {
+        queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+    }
+
+    @Test
+    //@Commit
+    void bulkDelete() {
+        queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+    }
+
+
+    @Test
+    void sqlFunction() {
+        List<String> result = queryFactory
+                .select(Expressions.stringTemplate(
+                        "function('replace', {0}, {1}, {2})"
+                        , member.username
+                        , "member"
+                        , "M"
+                ))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+
+    }
+
+
+    @Test
+    void sqlFunction2() {
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(
+                        Expressions.stringTemplate("function('lower', {0})", member.username)
+                )).fetch();
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+    }
+
 
 }

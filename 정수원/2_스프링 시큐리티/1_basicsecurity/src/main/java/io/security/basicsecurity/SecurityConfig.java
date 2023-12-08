@@ -73,6 +73,10 @@ public class SecurityConfig {
                             System.out.println("authentication = " + authentication.getName());
                             final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
                             final SavedRequest savedRequest = requestCache.getRequest(request, response);
+                            if (savedRequest == null || savedRequest.getRedirectUrl() == null) {
+                                response.sendRedirect("/");
+                                return;
+                            }
                             response.sendRedirect(savedRequest.getRedirectUrl());
                         })
                         .failureHandler((request, response, exception) -> {
@@ -126,12 +130,6 @@ public class SecurityConfig {
                             response.sendRedirect("/denied");
                         })
         );
-
-        // csrf 설정
-        /*http.csrf(
-                csrf -> csrf.disable()
-        );*/
-
 
         // SecurityContextHolder 전략 변경
         // SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

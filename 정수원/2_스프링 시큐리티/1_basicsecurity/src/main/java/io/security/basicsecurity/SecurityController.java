@@ -17,12 +17,12 @@ import java.util.function.Supplier;
 public class SecurityController {
     @GetMapping("/")
     public String index(HttpSession session) {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        /*final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final SecurityContext context =
                 (SecurityContext) session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
 
         final Authentication sessionAuthentication = context.getAuthentication();
-        System.out.println(authentication.equals(sessionAuthentication));
+        System.out.println(authentication.equals(sessionAuthentication));*/
 
         return "home";
     }

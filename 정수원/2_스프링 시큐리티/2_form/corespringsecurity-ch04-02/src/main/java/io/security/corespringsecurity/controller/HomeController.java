@@ -11,5 +11,4 @@ public class HomeController {
 	public String home() throws Exception {
 		return "home";
 	}
-
 }

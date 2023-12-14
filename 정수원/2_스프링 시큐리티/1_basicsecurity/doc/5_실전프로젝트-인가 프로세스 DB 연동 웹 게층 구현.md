@@ -31,7 +31,7 @@
 
 ------------------------------------------------------------------------------------------------------------------------
 
-> ## 웹 기반 인가 처리 DB 연동 - FilterInvocationSecurityMetadataSource
+> ## 웹 기반 인가 처리 DB 연동 - FilterInvocationSecurityMetadataSource(1)
 
 ### FilterInvocationSecurityMetadataSource 인터페이스
 - 사용자가 접근하고자 하는 URL 자원에 대한 권한 정보 추출
@@ -59,6 +59,11 @@
 - 인가 처리 클래스가 deprecated되고, AuthorizationManager로 대체되었다
 
 ------------------------------------------------------------------------------------------------------------------------
+
+> ## 웹 기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2)
+
+
+
 
 
 

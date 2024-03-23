@@ -37,8 +37,5 @@ public class ScannerWhileEx4 {
                 break;
             }
         }
-
-
-
     }
 }

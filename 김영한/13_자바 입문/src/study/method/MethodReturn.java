@@ -1,0 +1,15 @@
+package study.method;
+
+public class MethodReturn {
+    public static void main(String[] args) {
+        final boolean result = odd(2);
+        System.out.println("result = " + result);
+    }
+
+    public static boolean odd(int i) {
+        if (i % 2 == 1) {
+            return true;
+        }
+        return false;
+    }
+}
